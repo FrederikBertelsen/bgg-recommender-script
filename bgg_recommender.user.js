@@ -2,7 +2,7 @@
 // @name        boardgamegeek.com recommender
 // @namespace   Violentmonkey Scripts
 // @icon        https://cf.geekdo-static.com/icons/touch-icon180.png
-// @version     0.2.0
+// @version     0.2.1
 // @match       https://boardgamegeek.com/boardgame/*
 // @grant       GM_xmlhttpRequest
 // @connect     bgg-recommender.15263748.xyz
@@ -261,7 +261,7 @@
 
     const value = document.createElement('span');
     value.className = 'bgg-reco-value';
-    const percentile = polarization.percentile != null ? `${Math.round(Number(polarization.percentile) * 100)}%` : 'N/A';
+    const percentile = polarization.percentile != null ? `${Math.round(Number(polarization.percentile))}%` : 'N/A';
     value.textContent = `${polarization.label || 'Unknown'} (${percentile})`;
 
     div.appendChild(label);
