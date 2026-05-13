@@ -2,7 +2,7 @@
 // @name        boardgamegeek.com recommender
 // @namespace   Violentmonkey Scripts
 // @icon        https://cf.geekdo-static.com/icons/touch-icon180.png
-// @version     0.2.1
+// @version     0.3.0
 // @match       https://boardgamegeek.com/boardgame/*
 // @grant       GM_xmlhttpRequest
 // @connect     bgg-recommender.15263748.xyz
@@ -249,6 +249,43 @@
     gameplay.appendChild(li);
   }
 
+  function renderGamePolarization(data) {
+    if (!data || !data.polarization) return;
+
+    const gameplay = document.querySelector('ul.gameplay');
+    if (!gameplay) return;
+
+    const polarDiv = document.createElement('div');
+    polarDiv.className = 'bgg-game-metadata';
+    polarDiv.style.marginBottom = '12px';
+    polarDiv.style.whiteSpace = 'nowrap';
+
+    const label = document.createElement('span');
+    label.className = 'bgg-reco-label';
+    label.textContent = 'Polarization: ';
+    
+    const percentile = data.polarization.percentile != null ? `${Math.round(Number(data.polarization.percentile))}%` : 'N/A';
+    const value = document.createElement('span');
+    value.textContent = `${data.polarization.label || 'Unknown'} (${percentile})`;
+
+    polarDiv.appendChild(label);
+    polarDiv.appendChild(value);
+
+    if (data.polarization.confidence && data.polarization.confidence !== 'high') {
+      const separator = document.createElement('span');
+      separator.className = 'bgg-reco-label';
+      separator.textContent = ' · Confidence: ';
+      
+      const confidenceValue = document.createElement('span');
+      confidenceValue.textContent = data.polarization.confidence;
+      
+      polarDiv.appendChild(separator);
+      polarDiv.appendChild(confidenceValue);
+    }
+
+    gameplay.parentNode.insertBefore(polarDiv, gameplay);
+  }
+
   function buildPolarizationSummary(polarization) {
     if (!polarization) return null;
 
@@ -488,6 +525,7 @@
           try { renderHeaderGameLists(data); } catch (e) { console.warn('[BGG Recommender] renderHeaderGameLists failed', e); }
           try { renderPlayerCountScoreChart(data); } catch (e) { console.warn('[BGG Recommender] renderPlayerCountScoreChart failed', e); }
           try { renderGameVolumeWeight(data); } catch (e) { console.warn('[BGG Recommender] renderGameVolumeWeight failed', e); }
+          try { renderGamePolarization(data); } catch (e) { console.warn('[BGG Recommender] renderGamePolarization failed', e); }
           console.info('[BGG Recommender] About to render recommendations', {
             itemsCount: Array.isArray(data.recommendations) ? data.recommendations.length : 'not an array'
           });
